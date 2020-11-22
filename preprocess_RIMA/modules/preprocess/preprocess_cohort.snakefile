@@ -10,6 +10,15 @@ metadata = pd.read_csv(config["metasheet"], index_col=0, sep=',')
 ###input data(compressed or not)
 gz_command = "--readFilesCommand zcat" if config["samples"][metadata.index[0]][0][-3:] == '.gz' else ""
 
+########################################-----------------Modify here-------------#########################################
+##########################################################################################################################
+# column selection depends on the sequencing library type, refer to star parameter
+if config["library_type"] == "fr-firststrand":
+    count_col = 2
+elif config["library_type"] == "fr-secondstrand":
+    count_col = 3
+##########################################################################################################################
+##########################################################################################################################
 
 if config["library_type"] == "fr-firststrand":
     count_col = 3
@@ -41,6 +50,12 @@ def preprocess_cohort_targets(wildcards):
 rule preprocess_cohort_all:
     input:
       preprocess_cohort_targets
+
+########################################-----------------Modify here-------------#########################################
+##########################################################################################################################
+# two environments
+##########################################################################################################################
+##########################################################################################################################
 
 #--------------------STAR_cohort_csv---------------------------#
 rule STAR_matrix:
@@ -115,6 +130,7 @@ rule plot_gene_body_cvg:
     shell:
       "{params.path};perl src/preprocess/plot_gene_body_cvg.pl --rfile {output.rscript} --curves_png {output.png_curves}"
       " {input.samples_list} && {params.path}; Rscript {output.rscript}"
+
 
 #-------------Salmon cohort csv----------------------#
 rule salmon_matrix:
