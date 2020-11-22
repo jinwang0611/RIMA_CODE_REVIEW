@@ -12,6 +12,16 @@ gz_command = "--readFilesCommand zcat" if config["samples"][metadata.index[0]][0
 ###rseqc ref (housekeeping or not)
 rseqc_ref = config["housekeeping_bed_path"] if config["rseqc_ref"] == "house_keeping" else config["bed_path"]
 
+########################################-----------------Modify here-------------#########################################
+##########################################################################################################################
+# column selection depends on the sequencing library type, refer to star parameter
+if config["library_type"] == "fr-firststrand":
+    count_col = 2
+elif config["library_type"] == "fr-secondstrand":
+    count_col = 3
+##########################################################################################################################
+##########################################################################################################################
+
 
 ###extract gene reads count column from star output
 if config["library_type"] == "fr-firststrand":
@@ -87,6 +97,12 @@ def getHousekeepingBai(hk):
     else:
       return "analysis/star/{sample}/{sample}_downsampling.bam.bai"
 
+########################################-----------------Modify here-------------#########################################
+##########################################################################################################################
+#1.I am confused why generating unsorted bam file from STAR
+#2. how to activate STAR environment?
+##########################################################################################################################
+##########################################################################################################################
 
 #---------------------STAR alignment rules-------------------------#
 rule star_align:
@@ -178,6 +194,12 @@ rule Size_downsampling:
     shell:
         """chmod +x src/ds_check_size.sh && """
         """src/ds_check_size.sh {input} {output} """
+
+########################################-----------------Modify here-------------#########################################
+##########################################################################################################################
+#It seems you use environment by "source activate"? If you don not use conda environment created by snakemake you can remove conda: "../envs/rseqc_env.yml"
+##########################################################################################################################
+##########################################################################################################################
 
 rule bam_downsampling:
     input:
@@ -336,6 +358,12 @@ rule collect_insert_size:
     conda: "../envs/rseqc_env.yml"
     shell:
         "{params.path}; picard CollectInsertSizeMetrics O={output.text} I={input.bam}  R={config[fasta_path]} M=0.5 H={output.pdf}"
+
+########################################-----------------Modify here-------------#########################################
+##########################################################################################################################
+# how to activate salmon environment?
+##########################################################################################################################
+##########################################################################################################################
 
 #----------------------Salmon rules----------------------#
 rule salmon_quantification:
